@@ -23,7 +23,7 @@ BUILD_ORDER = [
     "10-conclusion-roadmap.md", "11-future-research.md", "99-appendices.md", "99-back-cover.md"   # පසුපිට
 ]
 
-def extract_terms(text, keyw ඔබords):
+def extract_terms(text, keywords):
     found_terms = []
     for term in keywords: 
         # සිංහල යුනිකෝඩ් වචන සහ ඉංග්‍රීසි වචන දෙකම හඳුනා ගැනීමට Regex
@@ -53,7 +53,7 @@ def build_manuscript():
     # වාර ගණන ගණනය කිරීම
     eng_counts = Counter(all_eng_terms)
     sin_counts = Counter(all_sin_terms)
-
+l
     # 1. ඒකාබද්ධ කළ ග්‍රන්ථය සුරැකීම
     with open("build/Full_Manuscript.md", "w", encoding="utf-8") as f:
         f.write(merged_content)

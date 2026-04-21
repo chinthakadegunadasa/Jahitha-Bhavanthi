@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="si">
+<head>
+    <meta charset="UTF-8">
+    <style>
+        @page {
+            size: A4;
+            margin: 0;
+        }
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: 'Iskoola Pota', 'Nirmala UI', sans-serif;
+            background-color: #050a14;
+            color: white;
+        }
+        /* මුල් පිටුව (Front Cover) */
+        .front-cover {
+            width: 210mm;
+            height: 297mm;
+            position: relative;
+            background: linear-gradient(rgba(5, 10, 20, 0.6), rgba(5, 10, 20, 0.6)), 
+                        url('https://path-to-your-ai-image.jpg'); /* AI රූපයේ ලින්ක් එක මෙතැනට */
+            background-size: cover;
+            background-position: center;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: space-between;
+            padding: 40px;
+            box-sizing: border-box;
+            border: 5px solid #1a3a5a;
+        }
+        .main-title {
+            font-size: 60pt;
+            font-weight: bold;
+            color: #f1c40f;
+            text-shadow: 2px 2px 10px rgba(0,0,0,0.8);
+            margin-top: 50px;
+        }
+        .sub-title {
+            font-size: 20pt;
+            color: #ecf0f1;
+            letter-spacing: 1px;
+            margin-top: 10px;
+        }
+        .author-box {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 20px;
+            border-radius: 10px;
+            text-align: center;
+            width: 80%;
+            margin-bottom: 50px;
+        }
+        /* පසුපිට (Back Cover) */
+        .back-cover {
+            width: 210mm;
+            height: 297mm;
+            background-color: #0a1428;
+            padding: 60px;
+            box-sizing: border-box;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            line-height: 1.6;
+            border-left: 10px solid #1a3a5a;
+        }
+        .blurb-title {
+            font-size: 24pt;
+            color: #f1c40f;
+            border-bottom: 2px solid #f1c40f;
+            padding-bottom: 10px;
+            margin-bottom: 20px;
+        }
+        .blurb-text {
+            font-size: 13pt;
+            text-align: justify;
+        }
+        .author-bio {
+            margin-top: 40px;
+            padding: 20px;
+            background: rgba(0,0,0,0.3);
+            border-left: 4px solid #3498db;
+        }
+        .footer-logo {
+            margin-top: auto;
+            text-align: right;
+            font-size: 10pt;
+            color: #7f8c8d;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="front-cover">
+        <div style="text-align: center;">
+            <div class="main-title">ජහිතා භවන්ති</div>
+            <div style="font-size: 18pt; color: #bdc3c7;">JAHITHA BHAVANTHI</div>
+            <div class="sub-title">පංචස්කන්ධ පද්ධතිය විනිවිද දකින ඉංජිනේරුමය විග්‍රහයක්</div>
+        </div>
+
+        <div class="author-box">
+            <div style="font-size: 16pt;"><b>චින්තක දේශප්‍රිය ගුණදාස</b></div>
+            <div style="font-size: 12pt; color: #bdc3c7;">(CTO/CSI, Cybergate Services)</div>
+            <div style="font-size: 14pt; margin-top: 10px;">සංස්කාරක: පූජ්‍ය ගාල්ලේ දස්සන හිමි</div>
+        </div>
+    </div>
+
+    <div class="back-cover">
+        <div class="blurb-title">ග්‍රන්ථ සාරාංශය</div>
+        <p class="blurb-text">
+            මිනිස් මනස නමැති අතිසංකීර්ණ මෙහෙයුම් පද්ධතියේ ක්‍රියාකාරීත්වය, බුදු දහමේ එන පංචස්කන්ධ විග්‍රහය තුළින් සහ නූතන පද්ධති ඉංජිනේරු විද්‍යාව ඇසුරින් විග්‍රහ කරන ප්‍රථම සිංහල කෘතිය මෙයයි. පද්ධතියක පවතින දත්ත බැඳීම් (Data Coupling) සහ උපාදානයන් හේතුවෙන් හටගන්නා පීඩනය (Stress) හඳුනාගෙන, එය පූර්ණ ලෙස නිවැරදි කරන ආකාරය මෙහි තාක්ෂණිකව පැහැදිලි කෙරේ.
+        </p>
+        
+        <div class="author-bio">
+            <b>චින්තක දේශප්‍රිය ගුණදාස</b><br>
+            Red Hat Certified Architect (RHCA) වරයෙකු වන ඔහු, වසර 25කට අධික කාලයක් Linux සහ විවෘත මූලාශ්‍ර තාක්ෂණයන් පිළිබඳ පර්යේෂණවල නියැලී සිටින ජ්‍යෙෂ්ඨ පද්ධති ඉංජිනේරුවෙකි.
+        </div>
+
+        <div class="footer-logo">
+            ප්‍රකාශනය: සයිබර්ගේට් සර්විසස් (පෞද්ගලික) සමාගම<br>
+            www.cybergate.lk
+        </div>
+    </div>
+
+</body>
+</html>

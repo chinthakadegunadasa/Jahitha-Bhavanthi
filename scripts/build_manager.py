@@ -1,14 +1,19 @@
-
 import os
 import re
 from collections import Counter
 
-# අප විසින් හඳුනාගත යුතු ප්‍රධාන තාක්ෂණික පාරිභාෂික වචන ලැයිස්තුව
-TECHNICAL_KEYWORDS = [
-    "Indrakheela", "Hardware", "Signal", "Input", "Processing", "Logic", "CPU", 
-    "Kernel", "Latency", "Buffer", "Metadata", "Debug", "Open-Source", 
-    "Sovereign", "Infrastructure", "De-coupling", "Memory", "Stress", "Protocol",
-    "Automation", "Interface", "Architecture", "Root", "Cache", "Synchronize"
+# ඉංග්‍රීසි තාක්ෂණික වචන
+ENGLISH_KEYWORDS = [
+    "Indrakheela", "Hardware", "Signal", "Processing", "Logic", "CPU", 
+    "Kernel", "Latency", "Buffer", "Metadata", "Debug", "Sovereign", 
+    "Infrastructure", "De-coupling", "Memory", "Stress", "Protocol"
+]
+
+# සිංහල පාරිභාෂික වචන
+SINHALA_KEYWORDS = [
+    "පංචස්කන්ධ", "උපාදාන", "රූප", "වේදනා", "සංඥා", "සංස්කාර", "විඤ්ඤාණ",
+    "අනිච්ච", "දුක්ඛ", "අනත්ත", "ආයතන", "ප්‍රතිසංස්කරණය", "අන්තලික්ඛ",
+    "අමනුෂ්‍ය", "ස්වෛරී", "පද්ධති", "ඉන්ද්‍රකීල"
 ]
 
 BUILD_ORDER = [
@@ -18,13 +23,12 @@ BUILD_ORDER = [
     "10-conclusion-roadmap.md", "11-future-research.md", "99-appendices.md"
 ]
 
-def extract_technical_terms(text):
-    # පෙළ තුළ ඇති ඉංග්‍රීසි තාක්ෂණික වචන සොයා ගැනීම (Case-insensitive)
+def extract_terms(text, keywords):
     found_terms = []
-    for term in TECHNICAL_KEYWORDS:
-        # වචනය සම්පූර්ණයෙන් ගැලපේදැයි බැලීමට Regex භාවිතා කරයි
-        matches = re.findall(rf'\b{term}\b', text, re.IGNORECASE)
-        found_terms.extend([m.capitalize() for m in matches])
+    for term in keywords:
+        # සිංහල යුනිකෝඩ් වචන සහ ඉංග්‍රීසි වචන දෙකම හඳුනා ගැනීමට Regex
+        matches = re.findall(rf'{term}', text, re.IGNORECASE)
+        found_terms.extend(matches)
     return found_terms
 
 def build_manuscript():
@@ -32,37 +36,47 @@ def build_manuscript():
         os.makedirs("build")
     
     merged_content = ""
-    all_found_terms = []
+    all_eng_terms = []
+    all_sin_terms = []
 
-    print("🚀 'ජහිතා භවන්ති' තාක්ෂණික විශ්ලේෂණය ආරම්භ වේ...\n")
+    print("🚀 'ජහිතා භවන්ති' ද්විභාෂා පාරිභාෂික විශ්ලේෂණය ආරම්භ වේ...\n")
 
     for file_name in BUILD_ORDER:
         file_path = os.path.join("src", file_name)
         if os.path.exists(file_path):
             with open(file_path, "r", encoding="utf-8") as f:
                 content = f.read()
-                # තාක්ෂණික වචන සොයා ගැනීම
-                all_found_terms.extend(extract_technical_terms(content))
+                all_eng_terms.extend(extract_terms(content, ENGLISH_KEYWORDS))
+                all_sin_terms.extend(extract_terms(content, SINHALA_KEYWORDS))
                 merged_content += content + "\n\n"
 
-    # වචන වාර ගණන ගණනය කිරීම
-    term_counts = Counter(all_found_terms)
+    # වාර ගණන ගණනය කිරීම
+    eng_counts = Counter(all_eng_terms)
+    sin_counts = Counter(all_sin_terms)
 
-    # 1. සම්පූර්ණ ගොනුව සුරැකීම
+    # 1. ඒකාබද්ධ කළ ග්‍රන්ථය සුරැකීම
     with open("build/Full_Manuscript.md", "w", encoding="utf-8") as f:
         f.write(merged_content)
 
-    # 2. තාක්ෂණික පාරිභාෂික ලැයිස්තුව (Technical Index) වෙනම සුරැකීම
-    with open("build/Technical_Index.txt", "w", encoding="utf-8") as f:
-        f.write("Jahitha Bhavanthi - Technical Terms Frequency Index\n")
-        f.write("="*50 + "\n")
-        for term, count in term_counts.most_common():
+    # 2. ද්විභාෂා දර්ශකය (Bilingual Index) සුරැකීම
+    with open("build/Complete_Index.txt", "w", encoding="utf-8") as f:
+        f.write("ජහිතා භවන්ති - Bilingual Terminology Index\n")
+        f.write("="*50 + "\n\n")
+        
+        f.write("[ සිංහල පාරිභාෂික වචන (Sinhala Terms) ]\n")
+        f.write("-" * 40 + "\n")
+        for term, count in sin_counts.most_common():
+            f.write(f"{term:<25} : {count} වරක්\n")
+            
+        f.write("\n[ තාක්ෂණික පාරිභාෂික වචන (English Terms) ]\n")
+        f.write("-" * 40 + "\n")
+        for term, count in eng_counts.most_common():
             f.write(f"{term:<25} : {count} වරක්\n")
 
-    print(f"✅ ගොනු ඒකාබද්ධ කිරීම අවසන්.")
-    print(f"📊 තාක්ෂණික වචන {len(term_counts)} ක් හඳුනාගන්නා ලදී.")
-    print(f"📂 දර්ශකය 'build/Technical_Index.txt' හි සුරැකෙන ලදී.\n")
+    print(f"✅ ගොනු ඒකාබද්ධ කිරීම සාර්ථකයි.")
+    print(f"📊 සිංහල පාරිභාෂික වචන {len(sin_counts)} ක් සහ ඉංග්‍රීසි වචන {len(eng_counts)} ක් විශ්ලේෂණය කරන ලදී.")
+    print(f"📂 සම්පූර්ණ දර්ශකය 'build/Complete_Index.txt' හි පවතී.\n")
 
 if __name__ == "__main__":
     build_manuscript()
-  
+    

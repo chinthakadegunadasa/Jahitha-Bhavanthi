@@ -1,4 +1,4 @@
-import os
+import os on
 import re
 from collections import Counter
 
@@ -17,7 +17,7 @@ SINHALA_KEYWORDS = [
 ]
 
 BUILD_ORDER = [
-    "00-front-cover.md", "toc.md", "01-system-intro.md", "02-indrakheela.md", "03-rupa-skandha.md",
+    "toc.md", "00-front-cover.md", "01-system-intro.md", "02-indrakheela.md", "03-rupa-skandha.md",
     "04-vedana-skandha.md", "05-sanna-skandha.md", "06-sankhara-skandha.md",
     "07-vinnana-skandha.md", "08-stress-analysis.md", "09-system-recovery.md",
     "10-conclusion-roadmap.md", "11-future-research.md", "99-appendices.md", "99-back-cover.md"   # පසුපිට

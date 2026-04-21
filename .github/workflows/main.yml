@@ -1,0 +1,69 @@
+name: Build Jahitha Bhavanthi Book
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - 'src/**'
+  workflow_dispatch: # හස්තීයව (Manually) run කිරීමට ඉඩ ලබා දීම
+
+jobs:
+  build-book:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Install Pandoc and XeLaTeX
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y pandoc texlive-xetex texlive-fonts-recommended fonts-lklug-sinhala
+
+      - name: Setup Sinhala Fonts
+        run: |
+          # සිංහල යුනිකෝඩ් ෆොන්ට් ස්ථාපනය කිරීම (Nirmala UI හෝ සමාන)
+          mkdir -p ~/.local/share/fonts
+          # මෙහිදී Ubuntu වල ඇති fonts-lklug-sinhala භාවිත වේ. 
+          # ඔබට අවශ්‍ය විශේෂිත ෆොන්ට් එකක් ඇත්නම් එය repo එකට දමා මෙහිදී copy කළ හැක.
+
+      - name: Create Build Directory
+        run: mkdir -p build
+
+      - name: Execute Build Script
+        run: |
+          # ගොනු අනුපිළිවෙල අනුව පෙළගැස්වීම
+          pandoc \
+            src/toc.md \
+            src/01-system-intro.md \
+            src/02-indrakheela.md \
+            src/03-rupa-skandha.md \
+            src/04-vedana-skandha.md \
+            src/05-sanna-skandha.md \
+            src/06-sankhara-skandha.md \
+            src/07-vinnana-skandha.md \
+            src/08-stress-analysis.md \
+            src/09-system-recovery.md \
+            src/10-conclusion-roadmap.md \
+            src/11-future-research.md \
+            src/99-appendices.md \
+            -o build/Jahitha_Bhavanthi_v1.0.pdf \
+            --pdf-engine=xelatex \
+            -V mainfont="LKLUG" \
+            --toc \
+            --number-sections
+
+          pandoc \
+            src/toc.md \
+            src/[0-9]*.md \
+            src/99-appendices.md \
+            -o build/Jahitha_Bhavanthi_v1.0.docx \
+            --toc
+
+      - name: Upload Production Artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: Production-Builds
+          path: build/
+          

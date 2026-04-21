@@ -17,15 +17,15 @@ SINHALA_KEYWORDS = [
 ]
 
 BUILD_ORDER = [
-    "toc.md", "01-system-intro.md", "02-indrakheela.md", "03-rupa-skandha.md",
+    "00-front-cover.md", # මුල් පිටුව"toc.md", "01-system-intro.md", "02-indrakheela.md", "03-rupa-skandha.md",
     "04-vedana-skandha.md", "05-sanna-skandha.md", "06-sankhara-skandha.md",
     "07-vinnana-skandha.md", "08-stress-analysis.md", "09-system-recovery.md",
     "10-conclusion-roadmap.md", "11-future-research.md", "99-appendices.md"
 ]
 
-def extract_terms(text, keywords):
+def extract_terms(text, keyw ඔබords):
     found_terms = []
-    for term in keywords:
+    for term in keywords: 
         # සිංහල යුනිකෝඩ් වචන සහ ඉංග්‍රීසි වචන දෙකම හඳුනා ගැනීමට Regex
         matches = re.findall(rf'{term}', text, re.IGNORECASE)
         found_terms.extend(matches)

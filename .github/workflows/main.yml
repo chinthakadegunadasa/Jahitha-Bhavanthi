@@ -1,4 +1,4 @@
-name: Build Jahitha Bhavanthi (B5 Edition)
+name: Build Jahitha Bhavanthi
 
 on:
   push:
@@ -24,34 +24,16 @@ jobs:
       - name: Create Build Directory
         run: mkdir -p build
 
-      - name: Debug - Verify Source Files
+      - name: Execute Build Script
         run: |
-          echo "Checking files in src/ directory..."
-          ls -R src/
-          # toc.md පවතීදැයි පරීක්ෂා කර නොමැති නම් අනතුරු ඇඟවීමක් ලබා දීම
-          if [ ! -f src/toc.md ]; then
-            echo "::warning file=src/toc.md::toc.md was not found in src/ folder!"
-          fi
-
-      - name: Execute Master Build (Pandoc)
-        run: |
-          # ගොනු පවතින අනුපිළිවෙල අනුව PDF එක සකස් කිරීම
-          # toc.md නොමැති වුවහොත් දෝෂයක් නොවී අනෙක් ගොනු භාවිත කිරීමට 'src/*.md' යොදා ඇත
-          pandoc \
-            src/[0-9]*.md \
-            --pdf-engine=xelatex \
-            -V mainfont="LKLUG" \
-            -V geometry:"paperwidth=176mm, paperheight=250mm, margin=20mm" \
-            --toc \
-            --toc-depth=3 \
-            --number-sections \
-            -o build/Jahitha_Bhavanthi_B5_Master.pdf
+          # Pandoc විධානය තනි පේළියකට සකස් කරන ලදී (Syntax දෝෂ මඟහැරීමට)
+          pandoc src/*.md --pdf-engine=xelatex -V mainfont=LKLUG -V geometry:"paperwidth=176mm, paperheight=250mm, margin=20mm" --toc --toc-depth=3 --number-sections -o build/Jahitha_Bhavanthi_Master.pdf
 
       - name: Generate Docx Version
         run: |
-          pandoc src/[0-9]*.md -o build/Jahitha_Bhavanthi_Draft.docx
+          pandoc src/*.md -o build/Jahitha_Bhavanthi_Draft.docx
 
-      - name: Upload Sovereign Production Artifacts
+      - name: Upload Artifacts
         uses: actions/upload-artifact@v4
         with:
           name: Jahitha-Bhavanthi-Builds

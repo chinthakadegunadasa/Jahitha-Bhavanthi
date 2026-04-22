@@ -1,82 +1,73 @@
-import os on
-import re
-from collections import Counter
 
-# ඉංග්‍රීසි තාක්ෂණික වචන
-ENGLISH_KEYWORDS = [
-    "Indrakheela", "Hardware", "Signal", "Processing", "Logic", "CPU", 
-    "Kernel", "Latency", "Buffer", "Metadata", "Debug", "Sovereign", 
-    "Infrastructure", "De-coupling", "Memory", "Stress", "Protocol"
-]
+import os
+import subprocess
+import sys
 
-# සිංහල පාරිභාෂික වචන
-SINHALA_KEYWORDS = [
-    "පංචස්කන්ධ", "උපාදාන", "රූප", "වේදනා", "සංඥා", "සංස්කාර", "විඤ්ඤාණ",
-    "අනිච්ච", "දුක්ඛ", "අනත්ත", "ආයතන", "ප්‍රතිසංස්කරණය", "අන්තලික්ඛ",
-    "අමනුෂ්‍ය", "ස්වෛරී", "පද්ධති", "ඉන්ද්‍රකීල"
-]
+# ව්‍යාපෘති මානයන් සහ සැකසුම් (B5 Standard)
+PAPER_SIZE = 'paperwidth=176mm, paperheight=250mm, margin=20mm'
+FONT = 'LKLUG'
+SOURCE_DIR = 'src'
+BUILD_DIR = 'build'
+OUTPUT_PDF = os.path.join(BUILD_DIR, 'Jahitha_Bhavanthi_B5_Master.pdf')
+OUTPUT_DOCX = os.path.join(BUILD_DIR, 'Jahitha_Bhavanthi_Draft.docx')
 
-BUILD_ORDER = [
-    "toc.md", "00-front-cover.md", "01-system-intro.md", "02-indrakheela.md", "03-rupa-skandha.md",
-    "04-vedana-skandha.md", "05-sanna-skandha.md", "06-sankhara-skandha.md",
-    "07-vinnana-skandha.md", "08-stress-analysis.md", "09-system-recovery.md",
-    "10-conclusion-roadmap.md", "11-future-research.md", "99-appendices.md", "99-back-cover.md"   # පසුපිට
-]
+def run_build():
+    # 1. Build ෆෝල්ඩරය පරීක්ෂා කිරීම
+    if not os.path.exists(BUILD_DIR):
+        os.makedirs(BUILD_DIR)
+        print(f"[*] Created {BUILD_DIR} directory.")
 
-def extract_terms(text, keywords):
-    found_terms = []
-    for term in keywords: 
-        # සිංහල යුනිකෝඩ් වචන සහ ඉංග්‍රීසි වචන දෙකම හඳුනා ගැනීමට Regex
-        matches = re.findall(rf'{term}', text, re.IGNORECASE)
-        found_terms.extend(matches)
-    return found_terms
+    # 2. ගොනු ලැයිස්තුගත කිරීම සහ පරීක්ෂා කිරීම
+    # 'src' ෆෝල්ඩරයේ ඇති අංකිත .md ගොනු පමණක් ලබා ගැනීම (00, 01, 02...)
+    md_files = sorted([os.path.join(SOURCE_DIR, f) for f in os.listdir(SOURCE_DIR) 
+                       if f.endswith('.md') and f[0].isdigit()])
 
-def build_manuscript():
-    if not os.path.exists("build"):
-        os.makedirs("build")
-    
-    merged_content = ""
-    all_eng_terms = []
-    all_sin_terms = []
+    if not md_files:
+        print("[!] Error: No markdown files found in 'src/' folder with numeric prefix.")
+        sys.exit(1)
 
-    print("🚀 'ජහිතා භවන්ති' ද්විභාෂා පාරිභාෂික විශ්ලේෂණය ආරම්භ වේ...\n")
+    print(f"[*] Found {len(md_files)} chapters. Starting Pandoc build...")
 
-    for file_name in BUILD_ORDER:
-        file_path = os.path.join("src", file_name)
-        if os.path.exists(file_path):
-            with open(file_path, "r", encoding="utf-8") as f:
-                content = f.read()
-                all_eng_terms.extend(extract_terms(content, ENGLISH_KEYWORDS))
-                all_sin_terms.extend(extract_terms(content, SINHALA_KEYWORDS))
-                merged_content += content + "\n\n"
+    # 3. Pandoc විධානය සකස් කිරීම (PDF සඳහා)
+    # toc.md තිබේ නම් එය ලැයිස්තුවේ මුලට එක් කෙරේ
+    pandoc_cmd_pdf = [
+        'pandoc',
+        *md_files,
+        '--pdf-engine=xelatex',
+        '-V', f'mainfont={FONT}',
+        '-V', f'geometry:{PAPER_SIZE}',
+        '--toc',
+        '--toc-depth=3',
+        '--number-sections',
+        '-o', OUTPUT_PDF
+    ]
 
-    # වාර ගණන ගණනය කිරීම
-    eng_counts = Counter(all_eng_terms)
-    sin_counts = Counter(all_sin_terms)
-l
-    # 1. ඒකාබද්ධ කළ ග්‍රන්ථය සුරැකීම
-    with open("build/Full_Manuscript.md", "w", encoding="utf-8") as f:
-        f.write(merged_content)
+    # 4. Pandoc විධානය (DOCX සඳහා)
+    pandoc_cmd_docx = [
+        'pandoc',
+        *md_files,
+        '-o', OUTPUT_DOCX
+    ]
 
-    # 2. ද්විභාෂා දර්ශකය (Bilingual Index) සුරැකීම
-    with open("build/Complete_Index.txt", "w", encoding="utf-8") as f:
-        f.write("ජහිතා භවන්ති - Bilingual Terminology Index\n")
-        f.write("="*50 + "\n\n")
-        
-        f.write("[ සිංහල පාරිභාෂික වචන (Sinhala Terms) ]\n")
-        f.write("-" * 40 + "\n")
-        for term, count in sin_counts.most_common():
-            f.write(f"{term:<25} : {count} වරක්\n")
-            
-        f.write("\n[ තාක්ෂණික පාරිභාෂික වචන (English Terms) ]\n")
-        f.write("-" * 40 + "\n")
-        for term, count in eng_counts.most_common():
-            f.write(f"{term:<25} : {count} වරක්\n")
+    try:
+        # PDF Build එක ක්‍රියාත්මක කිරීම
+        print("[*] Generating Master PDF (B5)...")
+        subprocess.run(pandoc_cmd_pdf, check=True)
+        print(f"[+] Success! PDF generated at: {OUTPUT_PDF}")
 
-    print(f"✅ ගොනු ඒකාබද්ධ කිරීම සාර්ථකයි.")
-    print(f"📊 සිංහල පාරිභාෂික වචන {len(sin_counts)} ක් සහ ඉංග්‍රීසි වචන {len(eng_counts)} ක් විශ්ලේෂණය කරන ලදී.")
-    print(f"📂 සම්පූර්ණ දර්ශකය 'build/Complete_Index.txt' හි පවතී.\n")
+        # DOCX Build එක ක්‍රියාත්මක කිරීම
+        print("[*] Generating Draft DOCX...")
+        subprocess.run(pandoc_cmd_docx, check=True)
+        print(f"[+] Success! DOCX generated at: {OUTPUT_DOCX}")
+
+    except subprocess.CalledProcessError as e:
+        print(f"[!] Build failed with error code: {e.returncode}")
+        sys.exit(1)
+    except FileNotFoundError:
+        print("[!] Error: Pandoc is not installed or not in PATH.")
+        sys.exit(1)
 
 if __name__ == "__main__":
-    build_manuscript()
+    print("=== Jahitha Bhavanthi Build System v2.0 ===")
+    run_build()
     

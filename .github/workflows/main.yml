@@ -26,12 +26,19 @@ jobs:
 
       - name: Execute Build Script
         run: |
-          # Pandoc විධානය තනි පේළියකට සකස් කරන ලදී (Syntax දෝෂ මඟහැරීමට)
-          pandoc src/*.md --pdf-engine=xelatex -V mainfont=LKLUG -V geometry:"paperwidth=176mm, paperheight=250mm, margin=20mm" --toc --toc-depth=3 --number-sections -o build/Jahitha_Bhavanthi_Master.pdf
+          # 'src/*.md' ලෙස Quotes භාවිතා කිරීමෙන් Alias Error එක මඟහැරේ
+          pandoc "src"/*.md \
+            --pdf-engine=xelatex \
+            -V mainfont=LKLUG \
+            -V geometry:"paperwidth=176mm, paperheight=250mm, margin=20mm" \
+            --toc \
+            --toc-depth=3 \
+            --number-sections \
+            -o build/Jahitha_Bhavanthi_Master.pdf
 
       - name: Generate Docx Version
         run: |
-          pandoc src/*.md -o build/Jahitha_Bhavanthi_Draft.docx
+          pandoc "src"/*.md -o build/Jahitha_Bhavanthi_Draft.docx
 
       - name: Upload Artifacts
         uses: actions/upload-artifact@v4

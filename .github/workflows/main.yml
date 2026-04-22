@@ -1,4 +1,4 @@
-name: Build Jahitha Bhavanthi Book
+name: Build Jahitha Bhavanthi (B5 Edition)
 
 on:
   push:
@@ -6,64 +6,54 @@ on:
       - main
     paths:
       - 'src/**'
-  workflow_dispatch: # හස්තීයව (Manually) run කිරීමට ඉඩ ලබා දීම
+  workflow_dispatch:
 
 jobs:
-  build-book:
+  build-manuscript:
     runs-on: ubuntu-latest
 
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v4
 
-      - name: Install Pandoc and XeLaTeX
+      - name: Install Dependencies
         run: |
           sudo apt-get update
           sudo apt-get install -y pandoc texlive-xetex texlive-fonts-recommended fonts-lklug-sinhala
 
-      - name: Setup Sinhala Fonts
-        run: |
-          # සිංහල යුනිකෝඩ් ෆොන්ට් ස්ථාපනය කිරීම (Nirmala UI හෝ සමාන)
-          mkdir -p ~/.local/share/fonts
-          # මෙහිදී Ubuntu වල ඇති fonts-lklug-sinhala භාවිත වේ. 
-          # ඔබට අවශ්‍ය විශේෂිත ෆොන්ට් එකක් ඇත්නම් එය repo එකට දමා මෙහිදී copy කළ හැක.
-
       - name: Create Build Directory
         run: mkdir -p build
 
-      - name: Execute Build Script
+      - name: Debug - Verify Source Files
         run: |
-          # ගොනු අනුපිළිවෙල අනුව පෙළගැස්වීම
+          echo "Checking files in src/ directory..."
+          ls -R src/
+          # toc.md පවතීදැයි පරීක්ෂා කර නොමැති නම් අනතුරු ඇඟවීමක් ලබා දීම
+          if [ ! -f src/toc.md ]; then
+            echo "::warning file=src/toc.md::toc.md was not found in src/ folder!"
+          fi
+
+      - name: Execute Master Build (Pandoc)
+        run: |
+          # ගොනු පවතින අනුපිළිවෙල අනුව PDF එක සකස් කිරීම
+          # toc.md නොමැති වුවහොත් දෝෂයක් නොවී අනෙක් ගොනු භාවිත කිරීමට 'src/*.md' යොදා ඇත
           pandoc \
-            src/toc.md \
-            src/01-system-intro.md \
-            src/02-indrakheela.md \
-            src/03-rupa-skandha.md \
-            src/04-vedana-skandha.md \
-            src/05-sanna-skandha.md \
-            src/06-sankhara-skandha.md \
-            src/07-vinnana-skandha.md \
-            src/08-stress-analysis.md \
-            src/09-system-recovery.md \
-            src/10-conclusion-roadmap.md \
-            src/11-future-research.md \
-            src/99-appendices.md \
-            -o build/Jahitha_Bhavanthi_v1.0.pdf \
+            src/[0-9]*.md \
             --pdf-engine=xelatex \
             -V mainfont="LKLUG" \
+            -V geometry:"paperwidth=176mm, paperheight=250mm, margin=20mm" \
             --toc \
-            --number-sections
+            --toc-depth=3 \
+            --number-sections \
+            -o build/Jahitha_Bhavanthi_B5_Master.pdf
 
-          pandoc \
-            src/toc.md \
-            src/[0-9]*.md \
-            src/99-appendices.md \
-            -o build/Jahitha_Bhavanthi_v1.0.docx \
-            --toc
+      - name: Generate Docx Version
+        run: |
+          pandoc src/[0-9]*.md -o build/Jahitha_Bhavanthi_Draft.docx
 
-      - name: Upload Production Artifacts
+      - name: Upload Sovereign Production Artifacts
         uses: actions/upload-artifact@v4
         with:
-          name: Production-Builds
+          name: Jahitha-Bhavanthi-Builds
           path: build/
           
